@@ -1,6 +1,7 @@
 import flask
 from flask import request, jsonify
 import mysql.connector
+from mysql.connector import cursor
 
 
 def connect_db():
@@ -66,37 +67,55 @@ def api_countries_all():
     return jsonify(result)
 
 
-# @app.route('/api/v1/resources/players', methods =['GET'])
-# def api_players_id():
-#     if 'id' in request.args:
-#         id = int(request.args['id'])
-#     else:
-#         return "Error: No field is provided. Specify ID."
+@app.route('/api/v1/resources/players', methods =['GET'])
+def api_players_id():
 
-#     results = []
-#     for player in players:
-#         if player['id'] == id:
-#             results.append(player)
+    conditions = []
+    count = 20
+    if 'id' in request.args:
+        id = int(request.args['id'])
+        conditions.append(("id", id))
 
-#     return jsonify(results)
+    if 'full_name' in request.args:
+        full_name = str(request.args['full_name'])
+        conditions.append(("full_name", full_name))
 
-# @app.route('/api/v1/resources/teams/all', methods=['GET'])
-# def api_teams_all():
-#     return jsonify(teams)
+    if 'playing_role' in request.args:
+        playing_role = str(request.args['playing_role'])
+        conditions.append(("playing_role", playing_role))
+    
+    if 'team_id' in request.args:
+        team_id = int(request.args['team_id'])
+        conditions.append(("team_id", team_id))
+    
+    if 'country_code' in request.args:
+        country_code = int(request.args['country_code'])
+        conditions.append(("country_code", country_code))
+    
+    if 'count' in request.args:
+        count = int(request.args['count'])
 
-# @app.route('/api/v1/resources/teams', methods =['GET'])
-# def api_teams_id():
-#     if 'id' in request.args:
-#         id = int(request.args['id'])
-#     else:
-#         return "Error: No field is provided. Specify ID."
+    if len(conditions) == 0:
+        return "No filters provided"
 
-#     results = []
+    conn = connect_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("select * from player;")
+    players = cursor.fetchall()
 
-#     for team in teams:
-#         if team['id'] == id:
-#             results.append(team)
+    def check_conditions(player, conditions):
+        for condition in conditions:
+            if player[condition[0]] != condition[1]:
+                return False
+        return True
 
-#     return jsonify(results)
+    result = []
+    for player in players:
+        if check_conditions(player, conditions):
+            result.append(player)
+        if len(result) >= count:
+            return jsonify(result)
 
+    return jsonify(result)
+    
 app.run()
