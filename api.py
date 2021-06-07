@@ -2,19 +2,32 @@ import flask
 from flask import request, jsonify
 import mysql.connector
 from mysql.connector import cursor
+from configparser import ConfigParser
 
 
 def connect_db():
     """
     Connect to db and return connection object
     """
+    config = ConfigParser()
+    config.read('database.ini')
     conn = mysql.connector.connect(
-        host = "localhost",
-        database = "cricket",
-        user = "root",
-        password = ""
+        host = config['database']['host'],
+        database = config['database']['database'],
+        user = config['database']['user'],
+        password = config['database']['password'],
     )
     return conn
+
+
+def check_conditions(item, conditions):
+    """
+    Function for checking conditions using a list of conditions. 
+    """
+    for condition in conditions:
+        if item[condition[0]] != condition[1]:
+            return False
+    return True
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -24,8 +37,7 @@ app.config["DEBUG"] = True
 def home():
     return "<h1>Cricket API</h1><p>Cricket League Tournament Application</p>"
 
-# route using url and GET from the database
-# connect to database 
+
 @app.route ('/api/v1/resources/players/all', methods = ['GET'])
 def api_players_all():
     conn = connect_db()
@@ -33,6 +45,7 @@ def api_players_all():
     cursor.execute("select * from player;")
     result = cursor.fetchall()
     return jsonify(result)
+
 
 @app.route ('/api/v1/resources/teams/all', methods = ['GET'])
 def api_teams_all():
@@ -42,6 +55,7 @@ def api_teams_all():
     result = cursor.fetchall()
     return jsonify(result)
 
+
 @app.route ('/api/v1/resources/matches/all', methods  = ['GET'])
 def api_matches_all(): 
     conn = connect_db()
@@ -50,6 +64,7 @@ def api_matches_all():
     result = cursor.fetchall()
     return jsonify(result)
 
+
 @app.route ('/api/v1/resources/venues/all', methods = ['GET'])
 def api_venues_all():
     conn = connect_db()
@@ -57,6 +72,7 @@ def api_venues_all():
     cursor.execute("SELECT * FROM venue;")
     result = cursor.fetchall()
     return jsonify(result)
+
 
 @app.route ('/api/v1/resources/countries/all', methods = ['GET'])
 def api_countries_all():
@@ -72,6 +88,7 @@ def api_players_id():
 
     conditions = []
     count = 20
+
     if 'id' in request.args:
         id = int(request.args['id'])
         conditions.append(("id", id))
@@ -103,12 +120,6 @@ def api_players_id():
     cursor.execute("select * from player;")
     players = cursor.fetchall()
 
-    def check_conditions(player, conditions):
-        for condition in conditions:
-            if player[condition[0]] != condition[1]:
-                return False
-        return True
-
     result = []
     for player in players:
         if check_conditions(player, conditions):
@@ -118,4 +129,106 @@ def api_players_id():
 
     return jsonify(result)
     
+
+@app.route('/api/v1/resources/teams', methods =['GET'])
+def api_teams_id():
+
+    conditions = []
+    count = 20
+
+    if 'id' in request.args:
+        value = int(request.args['id'])
+        conditions.append(("id", value))
+    
+    if 'name' in request.args:
+        value = str(request.args['name'])
+        conditions.append(("name", value))
+
+    if 'matches_played' in request.args:
+        value = int(request.args['matches_played'])
+        conditions.append(("matches_played", value))
+
+    if 'wins' in request.args:
+        value = int(request.args['wins'])
+        conditions.append(("wins", value))
+
+    if 'losses' in request.args:
+        value = int(request.args['losses'])
+        conditions.append(("losses", value))
+
+    if 'count' in request.args:
+        count = int(request.args['count'])
+
+    if len(conditions) == 0:
+        return "No filters provided"
+
+    conn = connect_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("select * from team;")
+    teams = cursor.fetchall()
+
+    result = []
+    for team in teams:
+        if check_conditions(team, conditions):
+            result.append(team)
+        if len(result) >= count:
+            return jsonify(result)
+    
+    return jsonify(result)
+
+
+@app.route('/api/v1/resources/matches', methods =['GET'])
+def api_matches_id(): 
+
+    conditions = []
+    count = 20
+
+    if 'id' in request.args:
+        value = int(request.args['id'])
+        conditions.append(("id", value))
+    
+    if 'winner' in request.args:
+        value = str(request.args['winner'])
+        conditions.append(("winner", value))
+
+    if 'loser' in request.args:
+        value = int(request.args['loser'])
+        conditions.append(("loser", value))
+
+    if 'man_of_the_match' in request.args:
+        value = int(request.args['man_of_the_match'])
+        conditions.append(("man_of_the _match", value))
+
+    if 'bowler_of_the_match' in request.args:
+        value = int(request.args['bowler_of_the_match'])
+        conditions.append(("bowler_of_the_match", value))
+
+    if 'best_fielder' in request.args:
+        value = int(request.args['best_fielder'])
+        conditions.append(("best_fielder", value))
+
+    if 'count' in request.args:
+        count = int(request.args['count'])
+
+    if len(conditions) == 0:
+        return "No filters provided"
+
+    conn = connect_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("select * from `match`;")
+    matches = cursor.fetchall()
+
+    result = []
+    for match in matches:
+        if check_conditions(match, conditions):
+            result.append(match)
+        if len(result) >= count:
+            return jsonify(result)
+    # TODO -> change referenced values to linked vaalues 
+    # example - 
+    # man_of_the_match: 3
+    # becomes
+    # man_of_the_match: /api/v1/resources/players/3 or something
+
+    return jsonify(result)
 app.run()
