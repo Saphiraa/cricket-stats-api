@@ -37,7 +37,21 @@ app.config["DEBUG"] = True
 def home():
     return "<h1>Cricket API</h1><p>Cricket League Tournament Application</p>"
 
+# RESOURCE BY ID
+@app.route('/api/v1/resources/players/<id>', methods = ['GET'])
+def api_players_id(id):
 
+    conn = connect_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("select * from player where id = %s;", (id,)) 
+    # Trailing comma is required.
+    # example - python treates (7) as 7 so to have a tuple of length 1, it has to be (7,)
+    # using mysqldb hence %s. use ? for sqlite 3.
+    # better check documentation of module
+    player = cursor.fetchall()
+    return jsonify(player)
+
+# ALL
 @app.route ('/api/v1/resources/players/all', methods = ['GET'])
 def api_players_all():
     conn = connect_db()
@@ -83,8 +97,9 @@ def api_countries_all():
     return jsonify(result)
 
 
-@app.route('/api/v1/resources/players', methods =['GET'])
-def api_players_id():
+# FILTERS
+@app.route('/api/v1/resources/players', methods = ['GET'])
+def api_players():
 
     conditions = []
     count = 20
@@ -130,8 +145,8 @@ def api_players_id():
     return jsonify(result)
     
 
-@app.route('/api/v1/resources/teams', methods =['GET'])
-def api_teams_id():
+@app.route('/api/v1/resources/teams', methods = ['GET'])
+def api_teams():
 
     conditions = []
     count = 20
@@ -177,8 +192,8 @@ def api_teams_id():
     return jsonify(result)
 
 
-@app.route('/api/v1/resources/matches', methods =['GET'])
-def api_matches_id(): 
+@app.route('/api/v1/resources/matches', methods = ['GET'])
+def api_matches(): 
 
     conditions = []
     count = 20
@@ -224,6 +239,7 @@ def api_matches_id():
             result.append(match)
         if len(result) >= count:
             return jsonify(result)
+
     # TODO -> change referenced values to linked vaalues 
     # example - 
     # man_of_the_match: 3
@@ -231,4 +247,6 @@ def api_matches_id():
     # man_of_the_match: /api/v1/resources/players/3 or something
 
     return jsonify(result)
+
+
 app.run()
