@@ -30,10 +30,7 @@ def check_conditions(item, conditions):
             return False
     return True
 
-# Ohk ye read karke dekh ye 3 new banaya for each for each? resource ohkk
-# Hoega to bata ohk haa but ye har ek column ke liye banaya hai url? sirf jo relative hai samjha sak
-# kuch galat lah rah to bata samjhaa toh sahi ki relative fields meko bhi nai sammjha hai sahi se kaisey serve kareka
-# but wait up
+
 def make_relative_player(players):
     for i in range(len(players)):
         players[i]["country_code"] = request.host_url + "api/v1/resources/countries/" + str(players[i]["country_code"])
