@@ -30,6 +30,32 @@ def check_conditions(item, conditions):
             return False
     return True
 
+# Ohk ye read karke dekh ye 3 new banaya for each for each? resource ohkk
+# Hoega to bata ohk haa but ye har ek column ke liye banaya hai url? sirf jo relative hai samjha sak
+# kuch galat lah rah to bata samjhaa toh sahi ki relative fields meko bhi nai sammjha hai sahi se kaisey serve kareka
+# but wait up
+def make_relative_player(players):
+    for i in range(len(players)):
+        players[i]["country_code"] = request.host_url + "api/v1/resources/countries/" + str(players[i]["country_code"])
+        players[i]["team_id"] = request.host_url +"api/v1/resources/teams/" + str(players[i]["team_id"])
+    return players
+
+
+def make_relative_venue(venues):
+    for i in range(len(venues)):
+        venues[i]["country_code"] = request.host_url + "api/v1/resources/countries/" + str(venues[i]["country_code"])
+    return venues
+
+    
+def make_relative_match(matches):
+    for i in range(len(matches)):
+        matches[i]["winner"] = request.host_url + "api/v1/resources/teams/" + str(matches[i]["winner"])
+        matches[i]["loser"] = request.host_url + "api/v1/resources/teams/" + str(matches[i]["loser"])
+        matches[i]["man_of_the_match"] = request.host_url + "api/v1/resources/players/" + str(matches[i]["man_of_the_match"])
+        matches[i]["bowler_of_the_match"] = request.host_url + "api/v1/resources/players/" + str(matches[i]["bowler_of_the_match"])
+        matches[i]["best_fielder"] = request.host_url + "api/v1/resources/players/" + str(matches[i]["best_fielder"])
+    return matches
+
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -62,6 +88,7 @@ def api_players_id(id):
         player = cursor.fetchall()
         cursor.close()
         conn.close()
+        player = make_relative_player(player)
         resp = jsonify(player)
         resp.status_code = 200
         return resp
@@ -89,6 +116,7 @@ def api_matches_id(id):
         # using mysqldb hence %s. use ? for sqlite 3.
         # better check documentation of module
         match = cursor.fetchall()
+        match = make_relative_match(match)
         cursor.close()
         conn.close()
         resp = jsonify(match)
@@ -177,6 +205,7 @@ def api_venues_id(id):
         # using mysqldb hence %s. use ? for sqlite 3.
         # better check documentation of module
         venue = cursor.fetchall()
+        venue = make_relative_venue(venue)
         cursor.close()
         conn.close()
         resp = jsonify(venue)
@@ -193,6 +222,7 @@ def api_players_all():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("select * from player;")
     result = cursor.fetchall()
+    result = make_relative_player(result)
     return jsonify(result)
 
 
@@ -211,6 +241,7 @@ def api_matches_all():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * from `match`;")
     result = cursor.fetchall()
+    result = make_relative_match(result)
     return jsonify(result)
 
 
@@ -220,6 +251,7 @@ def api_venues_all():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM venue;")
     result = cursor.fetchall()
+    result = make_relative_venue(result)
     return jsonify(result)
 
 
@@ -276,8 +308,10 @@ def api_players():
             if check_conditions(player, conditions):
                 result.append(player)
             if len(result) >= count:
+                result = make_relative_player(result)
                 return jsonify(result)
 
+        result = make_relative_player(result)
         return jsonify(result)
 
     elif request.method == 'POST':
@@ -423,14 +457,10 @@ def api_matches():
             if check_conditions(match, conditions):
                 result.append(match)
             if len(result) >= count:
+                result = make_relative_match(result)
                 return jsonify(result)
 
-        # TODO -> change referenced values to linked values 
-        # example - 
-        # man_of_the_match: 3
-        # becomes
-        # man_of_the_match: /api/v1/resources/players/3 or something
-
+        result = make_relative_match(result)
         return jsonify(result)
 
     elif request.method == 'POST':
@@ -491,12 +521,6 @@ def api_countries():
             if len(result) >= count:
                 return jsonify(result)
 
-        # TODO -> change referenced values to linked values 
-        # example - 
-        # man_of_the_match: 3
-        # becomes
-        # man_of_the_match: /api/v1/resources/players/3 or something
-
         return jsonify(result)
 
     elif request.method == 'POST':
@@ -555,14 +579,10 @@ def api_venues():
             if check_conditions(venue, conditions):
                 result.append(venue)
             if len(result) >= count:
+                result = make_relative_venue(result)
                 return jsonify(result)
         
-        # TODO -> change referenced values to linked values 
-        # example - 
-        # man_of_the_match: 3
-        # becomes
-        # man_of_the_match: /api/v1/resources/players/3 or something
-
+        result = make_relative_venue(result)
         return jsonify(result)
 
     elif request.method == 'POST':
