@@ -1,4 +1,3 @@
-from typing import Match
 import flask
 from flask import request, jsonify
 import mysql.connector
@@ -63,7 +62,7 @@ def home():
     return "<h1>Cricket API</h1><p>Cricket League Tournament Application</p>"
 
 # RESOURCE BY ID
-@app.route('/api/v1/resources/players/<id>', methods = ['GET', 'DELETE'])
+@app.route('/api/v1/resources/players/<id>', methods = ['GET', 'DELETE', 'PUT'])
 def api_players_id(id):
 
     if request.method == 'DELETE':
@@ -89,11 +88,24 @@ def api_players_id(id):
         resp = jsonify(player)
         resp.status_code = 200
         return resp
+    elif request.method == 'PUT':
+        conn = connect_db()
+        cursor = conn.cursor(dictionary=True)
+        # TODO - add checks for keys
+        for field, value in request.args.items():
+            cursor.execute(
+                "UPDATE player SET {} = %s WHERE id = %s;".format(field),
+                (value, id)
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify(success=True)
     else:
         return jsonify(success=False)
 
 
-@app.route('/api/v1/resources/matches/<id>', methods = ['GET', 'DELETE'])
+@app.route('/api/v1/resources/matches/<id>', methods = ['GET', 'DELETE', 'PUT'])
 def api_matches_id(id):
 
     if request.method == 'DELETE':
@@ -119,12 +131,24 @@ def api_matches_id(id):
         resp = jsonify(match)
         resp.status_code = 200
         return resp
-
+    elif request.method == 'PUT':
+        conn = connect_db()
+        cursor = conn.cursor(dictionary=True)
+        # TODO - add checks for keys
+        for field, value in request.args.items():
+            cursor.execute(
+                "UPDATE `match` SET {} = %s WHERE id = %s;".format(field),
+                (value, id)
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify(success=True)
     else:
         return jsonify(success=False)
 
 
-@app.route('/api/v1/resources/teams/<id>', methods = ['GET', 'DELETE'])
+@app.route('/api/v1/resources/teams/<id>', methods = ['GET', 'DELETE', 'PUT'])
 def api_teams_id(id):
 
     if request.method == 'DELETE':
@@ -149,11 +173,24 @@ def api_teams_id(id):
         resp = jsonify(team)
         resp.status_code = 200
         return resp
+    elif request.method == 'PUT':
+        conn = connect_db()
+        cursor = conn.cursor(dictionary=True)
+        # TODO - add checks for keys
+        for field, value in request.args.items():
+            cursor.execute(
+                "UPDATE team SET {} = %s WHERE id = %s;".format(field),
+                (value, id)
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify(success=True)
     else:
         return jsonify(success=False)
 
 
-@app.route('/api/v1/resources/countries/<code>', methods = ['GET', 'DELETE'])
+@app.route('/api/v1/resources/countries/<code>', methods = ['GET', 'DELETE','PUT'])
 def api_countries_id(code):
 
     if request.method == 'DELETE':
@@ -178,11 +215,24 @@ def api_countries_id(code):
         resp = jsonify(country)
         resp.status_code = 200
         return resp
+    elif request.method == 'PUT':
+        conn = connect_db()
+        cursor = conn.cursor(dictionary=True)
+        # TODO - add checks for keys
+        for field, value in request.args.items():
+            cursor.execute(
+                "UPDATE country SET {} = %s WHERE code = %s;".format(field),
+                (value, code)
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify(success=True)
     else:
         return jsonify(success=False)
 
 
-@app.route('/api/v1/resources/venues/<id>', methods = ['GET', 'DELETE'])
+@app.route('/api/v1/resources/venues/<id>', methods = ['GET', 'DELETE', 'PUT'])
 def api_venues_id(id):
 
     if request.method == 'DELETE':
@@ -208,6 +258,19 @@ def api_venues_id(id):
         resp = jsonify(venue)
         resp.status_code = 200
         return resp
+    elif request.method == 'PUT':
+        conn = connect_db()
+        cursor = conn.cursor(dictionary=True)
+        # TODO - add checks for keys
+        for field, value in request.args.items():
+            cursor.execute(
+                "UPDATE venue SET {} = %s WHERE id = %s;".format(field),
+                (value, id)
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify(success=True)
     else:
         return jsonify(success=False)
 
@@ -262,7 +325,7 @@ def api_countries_all():
 
 
 # RESOURCES
-@app.route('/api/v1/resources/players', methods = ['GET', 'POST'])
+@app.route('/api/v1/resources/players', methods = ['GET', 'POST', 'PUT'])
 def api_players():
 
     if request.method == 'GET':
@@ -403,6 +466,7 @@ def api_teams():
         conn.close()
 
         return jsonify(success=True)
+    
     else:
         return jsonify(success=False)
 
