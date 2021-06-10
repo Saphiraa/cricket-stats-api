@@ -42,8 +42,7 @@ The above example will return 20 records of type `player`, to change the number 
 > **Example:** GET `/api/v1/resources/players/1`
 
 ---
-
-#### *GET `api/v1/resources/{resource1}/{param1}={value1}&{param2}={value2}...`*
+#### *GET `api/v1/resources/{resource1}?{param1}={value1}&{param2}={value2}...`*
 
 For getting values of a resource by filtering using parameters
 
@@ -65,8 +64,7 @@ For creating a new record of a resource type
 #### *PUT `api/v1/resources/{resource}/{id}?{param1}={new_value1}&{param2}={new_value2}...`*
 
 For updating a record of a resource
-
-> **Example:** PUT `/api/v1/resources/players/2&team_id=3`
+> **Example:** PUT `/api/v1/resources/players/2?team_id=3`
 
 ---
 ## DELETE
