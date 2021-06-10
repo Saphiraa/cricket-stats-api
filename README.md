@@ -45,12 +45,8 @@ The above example will return 20 records of type `player`, to change the number 
 
 #### *GET `api/v1/resources/{resource1}/{param1}={value1}&{param2}={value2}...`*
 
-For getting values of a resource by filtering using parameters\
+For getting values of a resource by filtering using parameters
 
-> **Example:** GET `/api/v1/resources/players?id=2&name="abc%20xyz"` <- Isse to eh ho record aaega kuch bhi karle
-
-// Ye waale Example me ?id kyu daali? kya fayda hoega fir ek hi record aaega ya ek bhi nai
-better examople ->
 > **Example:** GET `/api/v1/resources/players?playing_role="Batsman"`
 
 ---
