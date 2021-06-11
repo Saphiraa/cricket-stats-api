@@ -46,7 +46,7 @@ The above example will return 20 records of type `player`, to change the number 
 
 For getting values of a resource by filtering using parameters
 
-> **Example:** GET `/api/v1/resources/players?playing_role="Batsman"`
+> **Example:** GET `/api/v1/resources/players?playing_role=Batsman  
 
 ---
 ## POST
