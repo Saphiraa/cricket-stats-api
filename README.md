@@ -16,6 +16,12 @@ A Cricket Statics API for practising Flask and API building. This is a hobby pro
 |venues| `id`, `country_code`, `name`|
 |matches| `id`, `best_fielder`, `bowler_of_the_match`, `loser`, `man_of_the_match`, `winner`|
 
+# Visuals
+
+### **Demo**
+
+[cricket-stats-api-v1 demo video](https://youtu.be/Lq9Zu1PoF60)
+
 
 # Usage
 Base URL - `hostname/api/v1/resources/`
