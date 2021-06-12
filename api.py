@@ -119,7 +119,7 @@ def api_matches_id(id):
     elif request.method == 'GET': 
         conn = connect_db()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("select * from `match` where id = %d;", (id,)) 
+        cursor.execute("select * from `match` where id = %s;", (id,)) 
         # Trailing comma is required.
         # example - python treates (7) as 7 so to have a tuple of length 1, it has to be (7,)
         # using mysqldb hence %s. use ? for sqlite 3.
@@ -190,13 +190,13 @@ def api_teams_id(id):
         return jsonify(success=False)
 
 
-@app.route('/api/v1/resources/countries/<code>', methods = ['GET', 'DELETE','PUT'])
-def api_countries_id(code):
+@app.route('/api/v1/resources/countries/<id>', methods = ['GET', 'DELETE','PUT'])
+def api_countries_id(id):
 
     if request.method == 'DELETE':
         conn = connect_db()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("delete from country where code = %s;", (code,))
+        cursor.execute("delete from country where id = %s;", (id,))
         conn.commit()
         cursor.close()
         conn.close()
@@ -204,7 +204,7 @@ def api_countries_id(code):
     elif request.method == 'GET': 
         conn = connect_db()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("select * from country where code = %s;", (code,)) 
+        cursor.execute("select * from country where id = %s;", (id,)) 
         # Trailing comma is required.
         # example - python treates (7) as 7 so to have a tuple of length 1, it has to be (7,)
         # using mysqldb hence %s. use ? for sqlite 3.
@@ -221,8 +221,8 @@ def api_countries_id(code):
         # TODO - add checks for keys
         for field, value in request.args.items():
             cursor.execute(
-                "UPDATE country SET {} = %s WHERE code = %s;".format(field),
-                (value, code)
+                "UPDATE country SET {} = %s WHERE id = %s;".format(field),
+                (value, id)
             )
         conn.commit()
         cursor.close()
@@ -556,9 +556,9 @@ def api_countries():
         conditions = []
         count = 20
 
-        if 'code' in request.args:
-            value = int(request.args['code'])
-            conditions.append(("code", value))
+        if 'id' in request.args:
+            value = int(request.args['id'])
+            conditions.append(("id", value))
         
         if 'name' in request.args:
             value = str(request.args['name'])
@@ -588,14 +588,14 @@ def api_countries():
         conn = connect_db()
         cursor = conn.cursor()
         
-        code = request.args["code"]
-        name = str(request.args["name"]).upper()
+        id = request.args["id"]
+        name = str(request.args["id"]).upper()
 
         cursor.execute(
             "insert into country "
-            "(code, name)"
+            "(id, name)"
             "values (%s, %s);",
-            (code, name)
+            (id, name)
         )
         conn.commit()
         cursor.close()
