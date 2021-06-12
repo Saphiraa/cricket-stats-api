@@ -17,8 +17,7 @@ def connect_db():
         database = config['database']['database'],
         user = config['database']['user'],
         password = config['database']['password'],
-        port = config['database']['port'],
-        ssl_ca = config['database']['ssl_ca']
+        port = config['database']['port']
     )
     return conn
 
