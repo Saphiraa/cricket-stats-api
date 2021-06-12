@@ -588,7 +588,7 @@ def api_countries():
         cursor = conn.cursor()
         
         id = request.args["id"]
-        name = str(request.args["id"]).upper()
+        name = str(request.args["name"]).upper()
 
         cursor.execute(
             "insert into country "
