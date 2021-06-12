@@ -4,6 +4,7 @@ import mysql.connector
 from mysql.connector import connect, cursor
 from configparser import ConfigParser
 
+app = flask.Flask(__name__)
 
 def connect_db():
     """
@@ -662,6 +663,3 @@ def api_venues():
     else:
         return jsonify(success=False)
 
-if __name__ == "__main__":
-    app = flask.Flask(__name__)
-    app.run()
