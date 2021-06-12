@@ -17,6 +17,7 @@ def connect_db():
         database = config['database']['database'],
         user = config['database']['user'],
         password = config['database']['password'],
+        port = config['database']['port']
     )
     return conn
 
@@ -662,4 +663,6 @@ def api_venues():
         return jsonify(success=True)
     else:
         return jsonify(success=False)
+
+
 
