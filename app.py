@@ -53,10 +53,6 @@ def make_relative_match(matches):
     return matches
 
 
-app = flask.Flask(__name__)
-app.config["DEBUG"] = True
-
-
 @app.route('/', methods=['GET'])
 def home():
     return "<h1>Cricket API</h1><p>Cricket League Tournament Application</p>"
@@ -666,5 +662,6 @@ def api_venues():
     else:
         return jsonify(success=False)
 
-
-app.run()
+if __name__ == "__main__":
+    app = flask.Flask(__name__)
+    app.run()
